@@ -1,5 +1,5 @@
 FROM php:7-fpm-alpine
-MAINTAINER Marcelo Oliveira <marcelo.oliveira@idealinvest.com.br>
+MAINTAINER Marcelo Oliveira <http://marceloweb.info>
 
 RUN apk --update add openjdk7-jre openssh git && \
     rm -rf /var/cache/apk/*
