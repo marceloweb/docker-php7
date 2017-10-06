@@ -1,6 +1,21 @@
 FROM php:7-fpm-alpine
 MAINTAINER Marcelo Oliveira <http://marceloweb.info>
 
+RUN apk add --update --virtual build_deps bash g++ autoconf make openssl-dev pcre-dev && \
+   docker-php-source extract docker-php-ext-enable mongodb && \
+   docker-php-source delete && \
+   apk del build_deps && \
+   rm -rf /var/cache/apk/* && \
+   rm -rf /tmp/*
+
+ENV PHP_AUTOCONF=/usr/bin/autoconf
+
+ENTRYPOINT ["/bin/sh", "-lc", "pecl install mongodb"]
+
+RUN apk add --update postgresql-dev
+
+RUN docker-php-ext-install pdo pdo pdo_pgsql
+
 RUN apk --update add openjdk7-jre openssh git && \
     rm -rf /var/cache/apk/*
 
@@ -9,7 +24,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 USER root
 ADD https://get.docker.com/builds/Linux/x86_64/docker-latest.tgz /tmp
-RUN tar -xvzf /tmp/docker-latest.tgz && mv docker/* /usr/bin/ && chmod 755 /usr/bin/docker && rm -f /tmp/docker-latest.tgz
+RUN tar -xvzf /tmp/docker-latest.tgz && cp -r docker/* /usr/bin/ && rm -rf docker && chmod 755 /usr/bin/docker && rm -f /tmp/docker-latest.tgz
 
 RUN delgroup ping
 
